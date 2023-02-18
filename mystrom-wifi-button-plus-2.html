@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <a id="downloadLink" href="#">download json</a>
+    <script>
+      /* credits: https://github.com/colin-stubbs/js-download-json-from-browser */
+      var btnName = 'hermes';
+      var path = '0_userdata.0.simple-api.mystrom';
+
+      var fileName = path + '.' + btnName + '-btn.json';
+      var fileType = 'application/json';
+
+      // contents
+      var btns = ['btn1','btn2','btn3','btn4'];
+      var actions = ['single','double','long'];
+
+      var obj = new Object();
+
+      btns.forEach(btn =>
+        actions.forEach(act => {
+          var actBtnName = path + '.' + btnName + '-' + btn + '-' + act;
+
+          var actBtnObj = new Object();
+          actBtnObj['common'] = {'name':'hermes-' + btn + '-' + act,'desc':'Manuell erzeugt','role':'state','type':'boolean','read':true,'write':true,'def':false};
+          actBtnObj['type'] = 'state';
+          actBtnObj['native'] = {};
+
+          obj[actBtnName] = actBtnObj;
+        })
+      );
+
+      var jsonString = JSON.stringify(obj);
+
+      var blob = new Blob([jsonString], { type: fileType });
+
+      var anchor = document.getElementById('downloadLink');
+
+      anchor.download = fileName;
+
+      if (window.navigator && window.navigator.msSaveOrOpenBlob && ! window.navigator.userAgent.indexOf('Edge/')) {
+        // IE support with exclusion for Edge as Edge sucks slightly less than IE.
+        anchor.onclick = function () { window.navigator.msSaveOrOpenBlob(blob, fileName) };
+      } else {
+        // Chrome, Edge, Firefox etc - any other up to date modern browser should work with the below
+        // Use (window.webkitURL || window.URL).createObjectURL(blob) if you need to support webKitURL for some reason.
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.dataset.downloadUrl = [ fileType, anchor.download, anchor.href].join(':');
+      }
+    </script>
+</body>
+</html>
